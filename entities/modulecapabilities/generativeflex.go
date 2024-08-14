@@ -1,0 +1,57 @@
+//                           _       _
+// __      _____  __ ___   ___  __ _| |_ ___
+// \ \ /\ / / _ \/ _` \ \ / / |/ _` | __/ _ \
+//  \ V  V /  __/ (_| |\ V /| | (_| | ||  __/
+//   \_/\_/ \___|\__,_| \_/ |_|\__,_|\__\___|
+//
+//  Copyright © 2016 - 2024 Weaviate B.V. All rights reserved.
+//
+//  CONTACT: hello@weaviate.io
+//
+
+package modulecapabilities
+
+import (
+	"context"
+
+	"github.com/weaviate/weaviate/entities/moduletools"
+)
+
+type GenerateFlexResponse struct {
+	Result *string
+	Params map[string]interface{}
+}
+
+// GenerativeClient defines generative client
+type GenerativeFlexClient interface {
+	GenerateSingleResult(ctx context.Context,
+		textProperties map[string]string, prompt string, requestParams interface{}, debug bool, cfg moduletools.ClassConfig,
+	) (*GenerateFlexResponse, error)
+	GenerateSingleResultWithMessages(ctx context.Context,
+		result interface{}, messages []interface{}, requestParams interface{}, debug bool, cfg moduletools.ClassConfig,
+	) (*GenerateFlexResponse, error)
+	GenerateAllResults(ctx context.Context,
+		textProperties []map[string]string, task string, requestParams interface{}, debug bool, cfg moduletools.ClassConfig,
+	) (*GenerateFlexResponse, error)
+	GenerateAllResultsWithMessages(ctx context.Context,
+		result []interface{}, messages []interface{}, requestParams interface{}, debug bool, cfg moduletools.ClassConfig,
+	) (*GenerateFlexResponse, error)
+	Generate(ctx context.Context, cfg moduletools.ClassConfig, prompt string, requestParams interface{}, debug bool,
+	) (*GenerateFlexResponse, error)
+}
+
+// GenerativeFlexProperty defines all needed additional request / response parameters
+// only client setting is manadatory as we can have generative modules
+// that don't expose any additional request / response params.
+type GenerativeFlexProperty struct {
+	Client                       GenerativeFlexClient
+	RequestParamsFunction        GraphQLInputFieldFn
+	ResponseParamsFunction       GraphQLFieldFn
+	ExtractRequestParamsFunction ExtractRequestParamsFn
+}
+
+// AdditionalGenerativeProperties groups whole interface methods needed
+// for adding the capability of additional generative properties
+type AdditionalGenerativeFlexProperties interface {
+	AdditionalGenerativeProperties() map[string]GenerativeFlexProperty
+}
