@@ -64,6 +64,7 @@ import (
 	modgenerativeollama "github.com/weaviate/weaviate/modules/generative-ollama"
 	modgenerativeopenai "github.com/weaviate/weaviate/modules/generative-openai"
 	modgenerativepalm "github.com/weaviate/weaviate/modules/generative-palm"
+	modgenerativeunbody "github.com/weaviate/weaviate/modules/generative-unbody"
 	modimage "github.com/weaviate/weaviate/modules/img2vec-neural"
 	modbind "github.com/weaviate/weaviate/modules/multi2vec-bind"
 	modclip "github.com/weaviate/weaviate/modules/multi2vec-clip"
@@ -1114,6 +1115,14 @@ func registerModules(appState *state.State) error {
 		appState.Logger.
 			WithField("action", "startup").
 			WithField("module", modtext2vecoctoai.Name).
+			Debug("enabled module")
+	}
+
+	if _, ok := enabledModules[modgenerativeunbody.Name]; ok {
+		appState.Modules.Register(modgenerativeunbody.New())
+		appState.Logger.
+			WithField("action", "startup").
+			WithField("module", modgenerativeunbody.Name).
 			Debug("enabled module")
 	}
 

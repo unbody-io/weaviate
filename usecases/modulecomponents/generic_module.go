@@ -94,3 +94,13 @@ func GetGenericGenerateProperty(
 	generate := additional.NewGenericGenerativeProvider(className, additionalGenerativeParameters, defaultProviderName, logger).AdditionalProperties()[additional.PropertyGenerate]
 	return &generate
 }
+
+func GetGenericGenerateFlexProperty(
+	className string,
+	additionalGenerativeParameters map[string]modulecapabilities.GenerativeFlexProperty,
+	defaultProviderName string,
+	logger logrus.FieldLogger,
+) *modulecapabilities.AdditionalProperty {
+	generate := additional.NewGenericGenerativeFlexProvider(className, additionalGenerativeParameters, defaultProviderName, logger).AdditionalProperties()[additional.PropertyGenerate]
+	return &generate
+}
