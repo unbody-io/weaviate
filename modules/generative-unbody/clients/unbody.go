@@ -175,8 +175,9 @@ func (v *unbody) Generate(ctx context.Context, cfg moduletools.ClassConfig, prom
 		return &modulecapabilities.GenerateFlexResponse{
 			Result: &trimmedResponse,
 			Params: map[string]interface{}{
-				"options": map[string]interface{}{
-					"Usage": resBody.Data.UsageMetadata,
+				"metadata": map[string]interface{}{
+					"finishReason": resBody.Data.FinishReason,
+					"usage":        resBody.Data.UsageMetadata,
 				},
 			},
 		}, nil
