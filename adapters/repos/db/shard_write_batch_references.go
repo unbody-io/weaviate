@@ -275,11 +275,20 @@ func (b *referencesBatcher) analyzeRef(obj *storobj.Object, ref objects.BatchRef
 		refs = make(models.MultipleRef, 0) // explicitly mark as length zero
 	} else {
 		parsed, ok := refProp.(models.MultipleRef)
+
 		if !ok {
-			return nil, errors.Errorf("prop %s is present, but not a ref, got: %T",
-				ref.From.Property.String(), refProp)
+			asArray, ok := refProp.([]interface{})
+
+			if !ok || len(asArray) > 0 {
+				return nil, errors.Errorf("prop %s is present, but not a ref, got: %T",
+					ref.From.Property.String(), refProp)
+			} else {
+				refs = make(models.MultipleRef, 0)
+			}
+		} else {
+			refs = parsed
 		}
-		refs = parsed
+
 	}
 
 	a := inverted.NewAnalyzer(nil)
