@@ -79,6 +79,7 @@ import (
 	modgenerativeollama "github.com/weaviate/weaviate/modules/generative-ollama"
 	modgenerativeopenai "github.com/weaviate/weaviate/modules/generative-openai"
 	modgenerativeunbody "github.com/weaviate/weaviate/modules/generative-unbody"
+	modimagecustom "github.com/weaviate/weaviate/modules/img2vec-custom"
 	modimage "github.com/weaviate/weaviate/modules/img2vec-neural"
 	modbind "github.com/weaviate/weaviate/modules/multi2vec-bind"
 	modclip "github.com/weaviate/weaviate/modules/multi2vec-clip"
@@ -93,6 +94,7 @@ import (
 	modqna "github.com/weaviate/weaviate/modules/qna-transformers"
 	modcentroid "github.com/weaviate/weaviate/modules/ref2vec-centroid"
 	modrerankercohere "github.com/weaviate/weaviate/modules/reranker-cohere"
+	modrerankercustom "github.com/weaviate/weaviate/modules/reranker-custom"
 	modrerankerdummy "github.com/weaviate/weaviate/modules/reranker-dummy"
 	modrerankerjinaai "github.com/weaviate/weaviate/modules/reranker-jinaai"
 	modrerankernvidia "github.com/weaviate/weaviate/modules/reranker-nvidia"
@@ -1059,6 +1061,14 @@ func registerModules(appState *state.State) error {
 			Debug("enabled module")
 	}
 
+	if _, ok := enabledModules[modrerankercustom.Name]; ok {
+		appState.Modules.Register(modrerankercustom.New())
+		appState.Logger.
+			WithField("action", "startup").
+			WithField("module", modrerankercustom.Name).
+			Debug("enabled module")
+	}
+
 	if _, ok := enabledModules[modrerankercohere.Name]; ok {
 		appState.Modules.Register(modrerankercohere.New())
 		appState.Logger.
@@ -1112,6 +1122,14 @@ func registerModules(appState *state.State) error {
 		appState.Logger.
 			WithField("action", "startup").
 			WithField("module", modimage.Name).
+			Debug("enabled module")
+	}
+
+	if _, ok := enabledModules[modimagecustom.Name]; ok {
+		appState.Modules.Register(modimagecustom.New())
+		appState.Logger.
+			WithField("action", "startup").
+			WithField("module", modimagecustom.Name).
 			Debug("enabled module")
 	}
 
