@@ -84,6 +84,7 @@ import (
 	modbind "github.com/weaviate/weaviate/modules/multi2vec-bind"
 	modclip "github.com/weaviate/weaviate/modules/multi2vec-clip"
 	modmulti2veccohere "github.com/weaviate/weaviate/modules/multi2vec-cohere"
+	modmulti2veccustom "github.com/weaviate/weaviate/modules/multi2vec-custom"
 	modmulti2vecgoogle "github.com/weaviate/weaviate/modules/multi2vec-google"
 	modmulti2vecjinaai "github.com/weaviate/weaviate/modules/multi2vec-jinaai"
 	modmulti2vecnvidia "github.com/weaviate/weaviate/modules/multi2vec-nvidia"
@@ -1204,6 +1205,15 @@ func registerModules(appState *state.State) error {
 		appState.Logger.
 			WithField("action", "startup").
 			WithField("module", modmulti2vecvoyageai.Name).
+			Debug("enabled module")
+	}
+
+	_, enabledMulti2VecCustom := enabledModules[modmulti2veccustom.Name]
+	if enabledMulti2VecCustom {
+		appState.Modules.Register(modmulti2veccustom.New())
+		appState.Logger.
+			WithField("action", "startup").
+			WithField("module", modmulti2veccustom.Name).
 			Debug("enabled module")
 	}
 
