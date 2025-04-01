@@ -54,6 +54,74 @@ func (v *vectorizer) Vectorize(ctx context.Context,
 		Thermal: thermal,
 		Depth:   depth,
 		Weights: weights,
+		Type:    "object",
+	})
+	if err != nil {
+		return nil, errors.Wrapf(err, "marshal body")
+	}
+
+	ichek := ent.NewClassSettings(cfg)
+	endpointUrl := ichek.GetEndpointURL()
+	if endpointUrl == "" {
+		return nil, errors.New("no endpoint URL provided")
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", endpointUrl,
+		bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	if err != nil {
+		return nil, errors.Wrap(err, "create POST request")
+	}
+
+	res, err := v.httpClient.Do(req)
+	if err != nil {
+		return nil, errors.Wrap(err, "send POST request")
+	}
+	defer res.Body.Close()
+
+	bodyBytes, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, errors.Wrap(err, "read response body")
+	}
+
+	var resBody vecResponse
+	if err := json.Unmarshal(bodyBytes, &resBody); err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf("unmarshal response body. Got: %v", string(bodyBytes)))
+	}
+
+	if res.StatusCode != 200 {
+		if resBody.Error != "" {
+			return nil, errors.Errorf("fail with status %d: %s", res.StatusCode,
+				resBody.Error)
+		}
+		return nil, errors.Errorf("fail with status %d", res.StatusCode)
+	}
+
+	return &ent.VectorizationResult{
+		TextVectors:     resBody.TextVectors,
+		ImageVectors:    resBody.ImageVectors,
+		AudioVectors:    resBody.AudioVectors,
+		VideoVectors:    resBody.VideoVectors,
+		IMUVectors:      resBody.IMUVectors,
+		ThermalVectors:  resBody.ThermalVectors,
+		DepthVectors:    resBody.DepthVectors,
+		CombinedVectors: resBody.CombinedVectors,
+	}, nil
+}
+
+func (v *vectorizer) VectorizeQuery(ctx context.Context,
+	texts, images, audio, video, imu, thermal, depth []string,
+	cfg moduletools.ClassConfig,
+) (*ent.VectorizationResult, error) {
+	body, err := json.Marshal(vecRequest{
+		Texts:   texts,
+		Images:  images,
+		Audio:   audio,
+		Video:   video,
+		IMU:     imu,
+		Thermal: thermal,
+		Depth:   depth,
+		Type:    "query",
 	})
 	if err != nil {
 		return nil, errors.Wrapf(err, "marshal body")
@@ -117,6 +185,7 @@ type vecRequest struct {
 	Thermal []string  `json:"thermal,omitempty"`
 	Depth   []string  `json:"depth,omitempty"`
 	Weights []float32 `json:"weights,omitempty"`
+	Type    string    `json:"type,omitempty"`
 }
 
 type vecResponse struct {

@@ -38,6 +38,10 @@ type Client interface {
 		weights []float32,
 		cfg moduletools.ClassConfig,
 	) (*ent.VectorizationResult, error)
+	VectorizeQuery(ctx context.Context,
+		texts, images, audio, video, imu, thermal, depth []string,
+		cfg moduletools.ClassConfig,
+	) (*ent.VectorizationResult, error)
 }
 
 type ClassSettings interface {
@@ -65,7 +69,7 @@ func (v *Vectorizer) Object(ctx context.Context, object *models.Object, cfg modu
 }
 
 func (v *Vectorizer) VectorizeImage(ctx context.Context, id, image string, cfg moduletools.ClassConfig) ([]float32, error) {
-	res, err := v.client.Vectorize(ctx, nil, []string{image}, nil, nil, nil, nil, nil, []float32{}, cfg)
+	res, err := v.client.VectorizeQuery(ctx, nil, []string{image}, nil, nil, nil, nil, nil, cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +77,7 @@ func (v *Vectorizer) VectorizeImage(ctx context.Context, id, image string, cfg m
 }
 
 func (v *Vectorizer) VectorizeAudio(ctx context.Context, audio string, cfg moduletools.ClassConfig) ([]float32, error) {
-	res, err := v.client.Vectorize(ctx, nil, nil, []string{audio}, nil, nil, nil, nil, []float32{}, cfg)
+	res, err := v.client.VectorizeQuery(ctx, nil, nil, []string{audio}, nil, nil, nil, nil, cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +85,7 @@ func (v *Vectorizer) VectorizeAudio(ctx context.Context, audio string, cfg modul
 }
 
 func (v *Vectorizer) VectorizeVideo(ctx context.Context, video string, cfg moduletools.ClassConfig) ([]float32, error) {
-	res, err := v.client.Vectorize(ctx, nil, nil, nil, []string{video}, nil, nil, nil, []float32{}, cfg)
+	res, err := v.client.VectorizeQuery(ctx, nil, nil, nil, []string{video}, nil, nil, nil, cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +93,7 @@ func (v *Vectorizer) VectorizeVideo(ctx context.Context, video string, cfg modul
 }
 
 func (v *Vectorizer) VectorizeIMU(ctx context.Context, imu string, cfg moduletools.ClassConfig) ([]float32, error) {
-	res, err := v.client.Vectorize(ctx, nil, nil, nil, nil, []string{imu}, nil, nil, []float32{}, cfg)
+	res, err := v.client.VectorizeQuery(ctx, nil, nil, nil, nil, []string{imu}, nil, nil, cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +101,7 @@ func (v *Vectorizer) VectorizeIMU(ctx context.Context, imu string, cfg moduletoo
 }
 
 func (v *Vectorizer) VectorizeThermal(ctx context.Context, thermal string, cfg moduletools.ClassConfig) ([]float32, error) {
-	res, err := v.client.Vectorize(ctx, nil, nil, nil, nil, nil, []string{thermal}, nil, []float32{}, cfg)
+	res, err := v.client.VectorizeQuery(ctx, nil, nil, nil, nil, nil, []string{thermal}, nil, cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +109,7 @@ func (v *Vectorizer) VectorizeThermal(ctx context.Context, thermal string, cfg m
 }
 
 func (v *Vectorizer) VectorizeDepth(ctx context.Context, depth string, cfg moduletools.ClassConfig) ([]float32, error) {
-	res, err := v.client.Vectorize(ctx, nil, nil, nil, nil, nil, nil, []string{depth}, []float32{}, cfg)
+	res, err := v.client.VectorizeQuery(ctx, nil, nil, nil, nil, nil, nil, []string{depth}, cfg)
 	if err != nil {
 		return nil, err
 	}
